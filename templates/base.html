@@ -4,23 +4,10 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        {% block title %}JobSphere{% endblock %}
-    </title>
-
-    <link
-        rel="stylesheet"
-        href="{% static 'css/style.css' %}"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}JobSphere{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
@@ -33,47 +20,35 @@
             JobSphere
         </a>
 
-
         <nav class="nav-links">
 
-            <a href="/">
+            <a href="/" class="nav-link">
                 Home
             </a>
 
-            <a href="/jobs/">
+            <a href="/jobs/" class="nav-link">
                 Find Jobs
             </a>
 
-            <a href="/notifications/" id="notificationNav">
+            <a href="/notifications/" class="nav-link" id="notificationNav">
                 Notifications
             </a>
 
+            <span id="guestLinks" class="guest-links">
 
-            <span id="guestLinks">
-
-                <a href="/login/">
+                <a href="/login/" class="nav-link">
                     Login
                 </a>
 
-                <a
-                    href="/register/"
-                    class="nav-button"
-                >
+                <a href="/register/" class="nav-button">
                     Get Started
                 </a>
 
             </span>
 
+            <span id="userLinks" class="user-links">
 
-            <span
-                id="userLinks"
-                style="display:none;"
-            >
-
-                <a
-                    href="#"
-                    id="dashboardLink"
-                >
+                <a href="#" id="dashboardLink" class="nav-link">
                     Dashboard
                 </a>
 
@@ -93,14 +68,12 @@
 
 </header>
 
-
 <main>
 
     {% block content %}
     {% endblock %}
 
 </main>
-
 
 <footer class="site-footer">
 
@@ -117,7 +90,6 @@
 
         </div>
 
-
         <div>
 
             <h4>Platform</h4>
@@ -131,7 +103,6 @@
             </a>
 
         </div>
-
 
         <div>
 
@@ -149,7 +120,6 @@
 
     </div>
 
-
     <div class="footer-bottom">
 
         <p>
@@ -160,136 +130,67 @@
 
 </footer>
 
-
 <script src="{% static 'js/main.js' %}"></script>
-
 <script src="{% static 'js/auth.js' %}"></script>
-
-
-<style>
-
-.logout-button {
-    border: 0;
-    background: transparent;
-    font: inherit;
-    cursor: pointer;
-    color: inherit;
-    padding: 0;
-}
-
-</style>
-
 
 <script>
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        if (
-            typeof JobSphereAuth ===
-            "undefined"
-        ) {
-            return;
-        }
-
-
-        const guestLinks =
-            document.getElementById(
-                "guestLinks"
-            );
-
-        const userLinks =
-            document.getElementById(
-                "userLinks"
-            );
-
-        const dashboardLink =
-            document.getElementById(
-                "dashboardLink"
-            );
-
-        const logoutButton =
-            document.getElementById(
-                "logoutButton"
-            );
-
-
-        const accessToken =
-            JobSphereAuth.getAccessToken();
-
-
-        if (!accessToken) {
-
-            guestLinks.style.display =
-                "inline-flex";
-
-            userLinks.style.display =
-                "none";
-
-            return;
-        }
-
-
-        guestLinks.style.display =
-            "none";
-
-        userLinks.style.display =
-            "inline-flex";
-
-
-        const payload =
-            decodeJwtPayload(accessToken);
-
-
-        if (
-            payload &&
-            payload.role === "recruiter"
-        ) {
-
-            dashboardLink.href =
-                "/recruiter/dashboard/";
-
-        } else {
-
-            dashboardLink.href =
-                "/candidate/dashboard/";
-        }
-
-
-        logoutButton.addEventListener(
-            "click",
-            function () {
-
-                JobSphereAuth.logout();
-
-            }
-        );
-
+    if (typeof JobSphereAuth === "undefined") {
+        return;
     }
-);
 
+    const guestLinks = document.getElementById("guestLinks");
+    const userLinks = document.getElementById("userLinks");
+    const dashboardLink = document.getElementById("dashboardLink");
+    const logoutButton = document.getElementById("logoutButton");
+
+    const accessToken = JobSphereAuth.getAccessToken();
+
+    if (!accessToken) {
+        guestLinks.style.display = "inline-flex";
+        userLinks.style.display = "none";
+        return;
+    }
+
+    guestLinks.style.display = "none";
+    userLinks.style.display = "inline-flex";
+
+    const payload = decodeJwtPayload(accessToken);
+
+    if (payload && payload.role === "recruiter") {
+        dashboardLink.href = "/recruiter/dashboard/";
+    } else {
+        dashboardLink.href = "/candidate/dashboard/";
+    }
+
+    logoutButton.addEventListener("click", function () {
+        JobSphereAuth.logout();
+    });
+
+});
 
 function decodeJwtPayload(token) {
 
     try {
 
-        const payload =
-            token.split(".")[1];
+        const payload = token.split(".")[1];
 
-        const decoded =
-            atob(
-                payload
-                    .replace(/-/g, "+")
-                    .replace(/_/g, "/")
-            );
+        const decoded = atob(
+            payload
+                .replace(/-/g, "+")
+                .replace(/_/g, "/")
+        );
 
         return JSON.parse(decoded);
 
     } catch (error) {
 
         return null;
+
     }
+
 }
 
 </script>
