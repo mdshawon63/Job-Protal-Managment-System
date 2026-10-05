@@ -1,0 +1,416 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications | JobSphere{% endblock %}
+
+{% block content %}
+
+<section class="notifications-page">
+
+    <div class="notifications-header">
+
+        <div>
+            <span class="eyebrow">JOBSPHERE</span>
+
+            <h1>Notifications</h1>
+
+            <p>
+                Stay updated about your applications, interviews and jobs.
+            </p>
+        </div>
+
+        <button id="markAllButton">
+            Mark All as Read
+        </button>
+
+    </div>
+
+    <div id="notificationMessage"></div>
+
+    <div id="notificationsContainer">
+
+        <div class="loading">
+            Loading notifications...
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+
+.notifications-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 50px 20px;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.notifications-header h1 {
+    margin: 8px 0;
+    font-size: 38px;
+}
+
+.notifications-header p {
+    color: #667085;
+}
+
+#markAllButton {
+    padding: 11px 15px;
+    border: 1px solid #d0d5dd;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.notification-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    border: 1px solid #e4e7ec;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    background: white;
+}
+
+.notification-item.unread {
+    border-left: 4px solid #101828;
+    background: #f9fafb;
+}
+
+.notification-content h3 {
+    margin: 0 0 7px;
+    font-size: 16px;
+}
+
+.notification-content p {
+    margin: 0;
+    color: #667085;
+    line-height: 1.6;
+}
+
+.notification-date {
+    color: #98a2b3;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.read-button {
+    margin-top: 10px;
+    padding: 7px 10px;
+    border: 1px solid #d0d5dd;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.empty-state,
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #667085;
+}
+
+.success-message,
+.error-message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.success-message {
+    color: #027a48;
+    background: #ecfdf3;
+}
+
+.error-message {
+    color: #b42318;
+    background: #fef3f2;
+}
+
+@media (max-width: 650px) {
+
+    .notifications-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .notifications-header h1 {
+        font-size: 30px;
+    }
+
+    .notification-item {
+        flex-direction: column;
+    }
+
+}
+
+</style>
+
+<script>
+
+const accessToken = localStorage.getItem("access_token");
+
+const container =
+    document.getElementById("notificationsContainer");
+
+const message =
+    document.getElementById("notificationMessage");
+
+
+async function loadNotifications() {
+
+    if (!accessToken) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                Please login to view notifications.
+            </div>
+        `;
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "/api/notifications/",
+            {
+                headers: {
+                    "Authorization":
+                        `Bearer ${accessToken}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Unable to load notifications.");
+        }
+
+        const data = await response.json();
+
+        const notifications =
+            data.results || data;
+
+        if (!notifications.length) {
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>No notifications</h3>
+                    <p>
+                        You're all caught up.
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        notifications.forEach(notification => {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                `notification-item ${
+                    notification.is_read ? "" : "unread"
+                }`;
+
+            item.innerHTML = `
+
+                <div class="notification-content">
+
+                    <h3>
+                        ${escapeHtml(notification.title)}
+                    </h3>
+
+                    <p>
+                        ${escapeHtml(notification.message)}
+                    </p>
+
+                    ${
+                        notification.is_read
+                            ? ""
+                            : `
+                                <button
+                                    class="read-button"
+                                    onclick="markAsRead(${notification.id})"
+                                >
+                                    Mark as read
+                                </button>
+                            `
+                    }
+
+                </div>
+
+                <div class="notification-date">
+                    ${formatDate(notification.created_at)}
+                </div>
+
+            `;
+
+            container.appendChild(item);
+
+        });
+
+    } catch (error) {
+
+        container.innerHTML = `
+            <div class="error-message">
+                Unable to load notifications.
+            </div>
+        `;
+
+        console.error(error);
+    }
+}
+
+
+async function markAsRead(notificationId) {
+
+    try {
+
+        const response = await fetch(
+            `/api/notifications/${notificationId}/read/`,
+            {
+                method: "PUT",
+                headers: {
+                    "Authorization":
+                        `Bearer ${accessToken}`,
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    is_read: true
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to mark notification.");
+        }
+
+        loadNotifications();
+
+    } catch (error) {
+
+        showMessage(
+            "Unable to mark notification as read.",
+            false
+        );
+
+        console.error(error);
+    }
+}
+
+
+document
+    .getElementById("markAllButton")
+    .addEventListener("click", async function() {
+
+        try {
+
+            const response = await fetch(
+                "/api/notifications/read-all/",
+                {
+                    method: "PUT",
+                    headers: {
+                        "Authorization":
+                            `Bearer ${accessToken}`,
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({})
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed.");
+            }
+
+            showMessage(
+                "All notifications marked as read.",
+                true
+            );
+
+            loadNotifications();
+
+        } catch (error) {
+
+            showMessage(
+                "Unable to mark all notifications.",
+                false
+            );
+
+            console.error(error);
+        }
+
+    });
+
+
+function showMessage(text, success) {
+
+    message.innerHTML = `
+        <div class="${
+            success
+                ? "success-message"
+                : "error-message"
+        }">
+            ${escapeHtml(text)}
+        </div>
+    `;
+
+    setTimeout(() => {
+        message.innerHTML = "";
+    }, 3000);
+}
+
+
+function formatDate(dateString) {
+
+    if (!dateString) {
+        return "";
+    }
+
+    return new Date(dateString).toLocaleString(
+        "en-BD",
+        {
+            dateStyle: "medium",
+            timeStyle: "short"
+        }
+    );
+}
+
+
+function escapeHtml(value) {
+
+    const div = document.createElement("div");
+
+    div.textContent = value || "";
+
+    return div.innerHTML;
+}
+
+
+loadNotifications();
+
+</script>
+
+{% endblock %}

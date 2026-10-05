@@ -1,0 +1,552 @@
+{% extends "base.html" %}
+
+{% block title %}Job Details | JobSphere{% endblock %}
+
+{% block content %}
+
+<section class="job-detail-page">
+
+    <div id="loading" class="loading">
+        Loading job...
+    </div>
+
+    <div id="errorBox" class="error-box"></div>
+
+    <div id="jobContent" style="display:none;">
+
+        <div class="job-header-card">
+
+            <div>
+                <span class="company-name" id="companyName"></span>
+
+                <h1 id="jobTitle"></h1>
+
+                <div class="job-meta">
+
+                    <span id="jobLocation"></span>
+                    <span id="jobType"></span>
+                    <span id="experienceLevel"></span>
+
+                </div>
+            </div>
+
+            <div class="salary-box" id="salary"></div>
+
+        </div>
+
+        <div class="detail-layout">
+
+            <main>
+
+                <section class="content-card">
+
+                    <h2>Job Description</h2>
+
+                    <p id="description"></p>
+
+                </section>
+
+                <section class="content-card">
+
+                    <h2>Requirements</h2>
+
+                    <p id="requirements"></p>
+
+                </section>
+
+                <section class="content-card">
+
+                    <h2>Responsibilities</h2>
+
+                    <p id="responsibilities"></p>
+
+                </section>
+
+                <section class="content-card">
+
+                    <h2>Skills</h2>
+
+                    <p id="skills"></p>
+
+                </section>
+
+            </main>
+
+            <aside>
+
+                <div class="apply-card">
+
+                    <h2>Apply for this Job</h2>
+
+                    <p>
+                        Submit your application and resume to the recruiter.
+                    </p>
+
+                    <form id="applyForm">
+
+                        <label for="coverLetter">
+                            Cover Letter
+                        </label>
+
+                        <textarea
+                            id="coverLetter"
+                            rows="7"
+                            placeholder="Write a short cover letter..."
+                        ></textarea>
+
+                        <label for="resume">
+                            Resume
+                        </label>
+
+                        <input
+                            type="file"
+                            id="resume"
+                            accept=".pdf,.doc,.docx"
+                        >
+
+                        <small>
+                            Maximum 5 MB. PDF, DOC or DOCX only.
+                        </small>
+
+                        <button
+                            type="submit"
+                            id="applyButton"
+                        >
+                            Apply Now
+                        </button>
+
+                    </form>
+
+                    <div id="applyMessage"></div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+
+.job-detail-page {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 50px 20px;
+}
+
+.loading {
+    text-align: center;
+    padding: 60px;
+    color: #667085;
+}
+
+.error-box {
+    display: none;
+    padding: 15px;
+    border-radius: 8px;
+    background: #fef3f2;
+    color: #b42318;
+    margin-bottom: 20px;
+}
+
+.job-header-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 35px;
+    border: 1px solid #e4e7ec;
+    border-radius: 16px;
+    background: white;
+    margin-bottom: 25px;
+}
+
+.company-name {
+    color: #667085;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.job-header-card h1 {
+    font-size: 38px;
+    margin: 10px 0 20px;
+}
+
+.job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.job-meta span {
+    padding: 8px 11px;
+    border-radius: 7px;
+    background: #f2f4f7;
+    font-size: 13px;
+}
+
+.salary-box {
+    min-width: 180px;
+    align-self: center;
+    font-weight: 700;
+    font-size: 17px;
+}
+
+.detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    gap: 25px;
+}
+
+.content-card,
+.apply-card {
+    border: 1px solid #e4e7ec;
+    border-radius: 14px;
+    background: white;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.content-card h2,
+.apply-card h2 {
+    margin-top: 0;
+}
+
+.content-card p {
+    color: #475467;
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+.apply-card {
+    position: sticky;
+    top: 20px;
+}
+
+.apply-card > p {
+    color: #667085;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#applyForm label {
+    display: block;
+    margin: 18px 0 7px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#coverLetter,
+#resume {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#coverLetter {
+    resize: vertical;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: inherit;
+}
+
+#resume {
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.apply-card small {
+    display: block;
+    margin-top: 7px;
+    color: #667085;
+}
+
+#applyButton {
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px;
+    border: 0;
+    border-radius: 8px;
+    background: #101828;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#applyButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#applyMessage {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.success-message {
+    color: #027a48;
+    background: #ecfdf3;
+    padding: 12px;
+    border-radius: 7px;
+}
+
+.fail-message {
+    color: #b42318;
+    background: #fef3f2;
+    padding: 12px;
+    border-radius: 7px;
+}
+
+@media (max-width: 800px) {
+
+    .job-header-card {
+        flex-direction: column;
+    }
+
+    .job-header-card h1 {
+        font-size: 30px;
+    }
+
+    .detail-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .apply-card {
+        position: static;
+    }
+}
+
+</style>
+
+<script>
+
+const jobId = "{{ job_id }}";
+const accessToken = localStorage.getItem("access_token");
+
+let currentJob = null;
+
+
+async function loadJob() {
+
+    const loading = document.getElementById("loading");
+    const errorBox = document.getElementById("errorBox");
+    const content = document.getElementById("jobContent");
+
+    if (!accessToken) {
+
+        loading.style.display = "none";
+
+        errorBox.innerText =
+            "Please login first to view this job.";
+
+        errorBox.style.display = "block";
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/api/jobs/${jobId}/`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Job could not be loaded.");
+        }
+
+        currentJob = await response.json();
+
+        document.getElementById("companyName").innerText =
+            currentJob.company_name || "Company";
+
+        document.getElementById("jobTitle").innerText =
+            currentJob.title;
+
+        document.getElementById("jobLocation").innerText =
+            currentJob.location || "Remote";
+
+        document.getElementById("jobType").innerText =
+            formatChoice(currentJob.job_type);
+
+        document.getElementById("experienceLevel").innerText =
+            formatChoice(currentJob.experience_level);
+
+        document.getElementById("salary").innerText =
+            getSalary(currentJob);
+
+        document.getElementById("description").innerText =
+            currentJob.description || "Not provided.";
+
+        document.getElementById("requirements").innerText =
+            currentJob.requirements || "Not provided.";
+
+        document.getElementById("responsibilities").innerText =
+            currentJob.responsibilities || "Not provided.";
+
+        document.getElementById("skills").innerText =
+            currentJob.skills || "Not provided.";
+
+        loading.style.display = "none";
+        content.style.display = "block";
+
+    } catch (error) {
+
+        loading.style.display = "none";
+
+        errorBox.innerText =
+            "Unable to load this job.";
+
+        errorBox.style.display = "block";
+
+        console.error(error);
+    }
+}
+
+
+function getSalary(job) {
+
+    if (!job.salary_min && !job.salary_max) {
+        return "Salary not specified";
+    }
+
+    const min = job.salary_min || 0;
+    const max = job.salary_max || "Negotiable";
+
+    return `৳${min} - ৳${max}`;
+}
+
+
+function formatChoice(value) {
+
+    if (!value) {
+        return "N/A";
+    }
+
+    return value
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
+
+document
+    .getElementById("applyForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const button =
+            document.getElementById("applyButton");
+
+        const message =
+            document.getElementById("applyMessage");
+
+        const coverLetter =
+            document.getElementById("coverLetter").value.trim();
+
+        const resumeInput =
+            document.getElementById("resume");
+
+        button.disabled = true;
+        button.innerText = "Submitting...";
+
+        message.innerHTML = "";
+
+        const formData = new FormData();
+
+        formData.append("job", jobId);
+        formData.append("cover_letter", coverLetter);
+
+        if (resumeInput.files.length > 0) {
+            formData.append(
+                "resume",
+                resumeInput.files[0]
+            );
+        }
+
+        try {
+
+            const response = await fetch(
+                "/api/applications/",
+                {
+                    method: "POST",
+                    headers: {
+                        "Authorization":
+                            `Bearer ${accessToken}`
+                    },
+                    body: formData
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+
+                let errorText =
+                    "Application could not be submitted.";
+
+                if (data.job) {
+                    errorText =
+                        Array.isArray(data.job)
+                            ? data.job[0]
+                            : data.job;
+                }
+
+                message.innerHTML = `
+                    <div class="fail-message">
+                        ${escapeHtml(String(errorText))}
+                    </div>
+                `;
+
+                return;
+            }
+
+            message.innerHTML = `
+                <div class="success-message">
+                    Application submitted successfully.
+                </div>
+            `;
+
+            document.getElementById("applyForm").reset();
+
+        } catch (error) {
+
+            message.innerHTML = `
+                <div class="fail-message">
+                    Something went wrong. Please try again.
+                </div>
+            `;
+
+            console.error(error);
+
+        } finally {
+
+            button.disabled = false;
+            button.innerText = "Apply Now";
+        }
+
+    });
+
+
+function escapeHtml(value) {
+
+    const div = document.createElement("div");
+
+    div.textContent = value || "";
+
+    return div.innerHTML;
+}
+
+
+loadJob();
+
+</script>
+
+{% endblock %}

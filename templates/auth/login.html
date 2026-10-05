@@ -1,0 +1,434 @@
+{% extends "base.html" %}
+
+{% block title %}Login | JobSphere{% endblock %}
+
+{% block content %}
+
+<section class="auth-page">
+
+    <div class="auth-card">
+
+        <div class="auth-header">
+
+            <span class="eyebrow">
+                JOBSPHERE
+            </span>
+
+            <h1>Welcome Back</h1>
+
+            <p>
+                Login to access your JobSphere account.
+            </p>
+
+        </div>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+            <button
+                type="submit"
+                id="loginButton"
+            >
+                Login
+            </button>
+
+        </form>
+
+        <div id="loginMessage"></div>
+
+        <div class="auth-footer">
+
+            <p>
+                Don't have an account?
+
+                <a href="/register/">
+                    Create Account
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+
+.auth-page {
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 35px;
+    border: 1px solid #e4e7ec;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.auth-header h1 {
+    margin: 10px 0;
+    font-size: 32px;
+}
+
+.auth-header p {
+    margin: 0;
+    color: #667085;
+    line-height: 1.6;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 14px;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: #101828;
+    box-shadow: 0 0 0 3px rgba(16, 24, 40, 0.08);
+}
+
+#loginButton {
+    width: 100%;
+    padding: 13px;
+    border: 0;
+    border-radius: 8px;
+    background: #101828;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#loginButton:hover {
+    background: #1d2939;
+}
+
+#loginButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#loginMessage {
+    margin-top: 18px;
+}
+
+.success-message,
+.error-message {
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.success-message {
+    color: #027a48;
+    background: #ecfdf3;
+}
+
+.error-message {
+    color: #b42318;
+    background: #fef3f2;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    color: #667085;
+    font-size: 14px;
+}
+
+.auth-footer a {
+    color: #101828;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+</style>
+
+<script>
+
+const loginForm =
+    document.getElementById("loginForm");
+
+const loginButton =
+    document.getElementById("loginButton");
+
+const loginMessage =
+    document.getElementById("loginMessage");
+
+loginForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+        const username =
+            document
+                .getElementById("username")
+                .value
+                .trim();
+
+        const password =
+            document
+                .getElementById("password")
+                .value;
+
+        if (!username || !password) {
+
+            showMessage(
+                "Username and password are required.",
+                false
+            );
+
+            return;
+        }
+
+        loginButton.disabled = true;
+        loginButton.innerText = "Logging in...";
+        loginMessage.innerHTML = "";
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/token/",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                let errorMessage =
+                    "Invalid username or password.";
+
+                if (data.detail) {
+                    errorMessage = data.detail;
+                }
+
+                showMessage(
+                    errorMessage,
+                    false
+                );
+
+                return;
+            }
+
+            localStorage.setItem(
+                "access_token",
+                data.access
+            );
+
+            localStorage.setItem(
+                "refresh_token",
+                data.refresh
+            );
+
+            const payload =
+                decodeJwtPayload(data.access);
+
+            if (!payload) {
+
+                showMessage(
+                    "Login successful, but token data could not be read.",
+                    false
+                );
+
+                return;
+            }
+
+            showMessage(
+                "Login successful. Redirecting...",
+                true
+            );
+
+            setTimeout(
+                function () {
+
+                    if (
+                        payload.role ===
+                        "recruiter"
+                    ) {
+
+                        window.location.href =
+                            "/recruiter/dashboard/";
+
+                    } else {
+
+                        window.location.href =
+                            "/candidate/dashboard/";
+
+                    }
+
+                },
+                700
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Login error:",
+                error
+            );
+
+            showMessage(
+                "Unable to connect to the server. Please try again.",
+                false
+            );
+
+        } finally {
+
+            loginButton.disabled = false;
+            loginButton.innerText = "Login";
+        }
+
+    }
+);
+
+function decodeJwtPayload(token) {
+
+    try {
+
+        const parts =
+            token.split(".");
+
+        if (parts.length !== 3) {
+            return null;
+        }
+
+        const base64 =
+            parts[1]
+                .replace(/-/g, "+")
+                .replace(/_/g, "/");
+
+        const decoded =
+            atob(base64);
+
+        return JSON.parse(decoded);
+
+    } catch (error) {
+
+        return null;
+    }
+}
+
+function showMessage(
+    message,
+    success
+) {
+
+    loginMessage.innerHTML = `
+
+        <div class="${
+            success
+                ? "success-message"
+                : "error-message"
+        }">
+
+            ${escapeHtml(message)}
+
+        </div>
+
+    `;
+}
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value || "";
+
+    return div.innerHTML;
+}
+
+</script>
+
+{% endblock %}

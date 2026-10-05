@@ -1,0 +1,537 @@
+{% extends "base.html" %}
+
+{% block title %}Register | JobSphere{% endblock %}
+
+{% block content %}
+
+<section class="auth-page">
+
+    <div class="auth-card">
+
+        <div class="auth-header">
+
+            <span class="eyebrow">
+                JOBSPHERE
+            </span>
+
+            <h1>Create Account</h1>
+
+            <p>
+                Join JobSphere and start your career journey.
+            </p>
+
+        </div>
+
+
+        <form id="registerForm">
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="firstName">
+                        First Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="firstName"
+                        placeholder="First name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="lastName">
+                        Last Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="lastName"
+                        placeholder="Last name"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Choose a username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="phone">
+                    Phone
+                </label>
+
+                <input
+                    type="text"
+                    id="phone"
+                    placeholder="01XXXXXXXXX"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="role">
+                    Account Type
+                </label>
+
+                <select id="role">
+
+                    <option value="candidate">
+                        Candidate
+                    </option>
+
+                    <option value="recruiter">
+                        Recruiter
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Minimum 8 characters"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="confirmPassword">
+                        Confirm Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Confirm password"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                id="registerButton"
+            >
+                Create Account
+            </button>
+
+        </form>
+
+
+        <div id="registerMessage"></div>
+
+
+        <div class="auth-footer">
+
+            <p>
+
+                Already have an account?
+
+                <a href="/login/">
+                    Login
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<style>
+
+.auth-page {
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 560px;
+    padding: 35px;
+    border: 1px solid #e4e7ec;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.auth-header h1 {
+    margin: 10px 0;
+    font-size: 32px;
+}
+
+.auth-header p {
+    color: #667085;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #101828;
+}
+
+#registerButton {
+    width: 100%;
+    padding: 13px;
+    border: 0;
+    border-radius: 8px;
+    background: #101828;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#registerButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#registerMessage {
+    margin-top: 18px;
+}
+
+.success-message,
+.error-message {
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.success-message {
+    color: #027a48;
+    background: #ecfdf3;
+}
+
+.error-message {
+    color: #b42318;
+    background: #fef3f2;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    color: #667085;
+    font-size: 14px;
+}
+
+.auth-footer a {
+    color: #101828;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+@media (max-width: 600px) {
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+}
+
+</style>
+
+
+<script>
+
+const registerForm =
+    document.getElementById("registerForm");
+
+const registerButton =
+    document.getElementById("registerButton");
+
+const registerMessage =
+    document.getElementById("registerMessage");
+
+
+registerForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+        const password =
+            document.getElementById("password").value;
+
+        const confirmPassword =
+            document.getElementById("confirmPassword").value;
+
+        if (password !== confirmPassword) {
+
+            showMessage(
+                "Passwords do not match.",
+                false
+            );
+
+            return;
+        }
+
+        if (password.length < 8) {
+
+            showMessage(
+                "Password must contain at least 8 characters.",
+                false
+            );
+
+            return;
+        }
+
+        const userData = {
+
+            username:
+                document.getElementById("username").value.trim(),
+
+            email:
+                document.getElementById("email").value.trim(),
+
+            password:
+                password,
+
+            first_name:
+                document.getElementById("firstName").value.trim(),
+
+            last_name:
+                document.getElementById("lastName").value.trim(),
+
+            phone:
+                document.getElementById("phone").value.trim(),
+
+            role:
+                document.getElementById("role").value
+        };
+
+
+        registerButton.disabled = true;
+        registerButton.innerText = "Creating Account...";
+
+        registerMessage.innerHTML = "";
+
+
+        try {
+
+            const response = await fetch(
+                "/api/auth/register/",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify(userData)
+                }
+            );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                showApiErrors(data);
+
+                return;
+            }
+
+
+            showMessage(
+                "Account created successfully. Redirecting to login...",
+                true
+            );
+
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "/login/";
+
+                },
+                1200
+            );
+
+
+        } catch (error) {
+
+            showMessage(
+                "Unable to connect to the server.",
+                false
+            );
+
+            console.error(error);
+
+        } finally {
+
+            registerButton.disabled = false;
+            registerButton.innerText = "Create Account";
+
+        }
+
+    }
+);
+
+
+function showMessage(text, success) {
+
+    registerMessage.innerHTML = `
+        <div class="${
+            success
+                ? "success-message"
+                : "error-message"
+        }">
+            ${escapeHtml(text)}
+        </div>
+    `;
+}
+
+
+function showApiErrors(data) {
+
+    const errors = [];
+
+    Object.keys(data).forEach(function (field) {
+
+        const value = data[field];
+
+        if (Array.isArray(value)) {
+
+            errors.push(
+                `${field}: ${value.join(", ")}`
+            );
+
+        } else {
+
+            errors.push(
+                `${field}: ${value}`
+            );
+
+        }
+
+    });
+
+
+    showMessage(
+        errors.length
+            ? errors.join(" | ")
+            : "Registration failed.",
+        false
+    );
+}
+
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value || "";
+
+    return div.innerHTML;
+}
+
+</script>
+
+{% endblock %}

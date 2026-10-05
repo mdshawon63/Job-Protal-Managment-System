@@ -1,0 +1,547 @@
+{% extends "base.html" %}
+
+{% block title %}Find Jobs | JobSphere{% endblock %}
+
+{% block content %}
+
+<section class="jobs-page">
+
+    <div class="jobs-header">
+        <div>
+            <span class="eyebrow">JOBSPHERE CAREERS</span>
+            <h1>Find Your Next Opportunity</h1>
+            <p>
+                Discover professional opportunities from verified companies.
+            </p>
+        </div>
+    </div>
+
+    <div class="search-panel">
+
+        <div class="search-field">
+            <label for="search">Search</label>
+            <input
+                type="text"
+                id="search"
+                placeholder="Job title, skill, company..."
+            >
+        </div>
+
+        <div class="search-field">
+            <label for="location">Location</label>
+            <input
+                type="text"
+                id="location"
+                placeholder="Dhaka, Remote..."
+            >
+        </div>
+
+        <div class="search-field">
+            <label for="jobType">Job Type</label>
+            <select id="jobType">
+                <option value="">All Types</option>
+                <option value="full_time">Full Time</option>
+                <option value="part_time">Part Time</option>
+                <option value="contract">Contract</option>
+                <option value="internship">Internship</option>
+                <option value="remote">Remote</option>
+            </select>
+        </div>
+
+        <div class="search-field">
+            <label for="experience">Experience</label>
+            <select id="experience">
+                <option value="">All Levels</option>
+                <option value="entry">Entry Level</option>
+                <option value="mid">Mid Level</option>
+                <option value="senior">Senior Level</option>
+            </select>
+        </div>
+
+        <div class="search-field">
+            <label for="ordering">Sort By</label>
+            <select id="ordering">
+                <option value="">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="salary_high">Highest Salary</option>
+                <option value="salary_low">Lowest Salary</option>
+            </select>
+        </div>
+
+        <button id="searchButton" class="search-button">
+            Search Jobs
+        </button>
+
+    </div>
+
+    <div class="jobs-result-header">
+        <div>
+            <h2>Available Jobs</h2>
+            <span id="resultCount">Loading jobs...</span>
+        </div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div id="jobsContainer" class="jobs-grid"></div>
+
+    <div id="pagination" class="pagination"></div>
+
+</section>
+
+<style>
+
+.jobs-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 20px;
+}
+
+.jobs-header {
+    margin-bottom: 35px;
+}
+
+.eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+}
+
+.jobs-header h1 {
+    margin: 0 0 10px;
+    font-size: 42px;
+}
+
+.jobs-header p {
+    color: #667085;
+    font-size: 16px;
+}
+
+.search-panel {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr) auto;
+    gap: 14px;
+    padding: 22px;
+    border: 1px solid #e4e7ec;
+    border-radius: 14px;
+    background: #ffffff;
+    margin-bottom: 35px;
+}
+
+.search-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.search-field input,
+.search-field select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+}
+
+.search-button {
+    align-self: end;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    background: #101828;
+    color: white;
+}
+
+.jobs-result-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.jobs-result-header h2 {
+    margin: 0 0 5px;
+}
+
+#resultCount {
+    color: #667085;
+    font-size: 14px;
+}
+
+.jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.job-card {
+    border: 1px solid #e4e7ec;
+    border-radius: 14px;
+    padding: 22px;
+    background: white;
+    transition: 0.2s;
+}
+
+.job-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(16, 24, 40, 0.08);
+}
+
+.job-company {
+    color: #667085;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.job-title {
+    margin: 0 0 12px;
+    font-size: 20px;
+}
+
+.job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.job-tag {
+    background: #f2f4f7;
+    padding: 6px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.job-description {
+    color: #667085;
+    line-height: 1.6;
+    font-size: 14px;
+    min-height: 66px;
+}
+
+.job-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.salary {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.view-job {
+    text-decoration: none;
+    padding: 9px 13px;
+    border-radius: 7px;
+    background: #101828;
+    color: white;
+    font-size: 13px;
+}
+
+.message {
+    display: none;
+    padding: 14px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background: #fef3f2;
+    color: #b42318;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 35px;
+}
+
+.pagination button {
+    padding: 9px 14px;
+    border: 1px solid #d0d5dd;
+    background: white;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+    .search-panel {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .jobs-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+    .jobs-header h1 {
+        font-size: 30px;
+    }
+
+    .search-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .jobs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+
+<script>
+
+const accessToken = localStorage.getItem("access_token");
+
+let currentPage = 1;
+
+async function loadJobs(page = 1) {
+
+    const search = document.getElementById("search").value.trim();
+    const location = document.getElementById("location").value.trim();
+    const jobType = document.getElementById("jobType").value;
+    const experience = document.getElementById("experience").value;
+    const ordering = document.getElementById("ordering").value;
+
+    const params = new URLSearchParams();
+
+    params.append("page", page);
+
+    if (search) {
+        params.append("search", search);
+    }
+
+    if (location) {
+        params.append("location", location);
+    }
+
+    if (jobType) {
+        params.append("job_type", jobType);
+    }
+
+    if (experience) {
+        params.append("experience_level", experience);
+    }
+
+    if (ordering) {
+        params.append("ordering", ordering);
+    }
+
+    const container = document.getElementById("jobsContainer");
+    const message = document.getElementById("message");
+
+    container.innerHTML = "";
+    message.style.display = "none";
+
+    if (!accessToken) {
+        message.innerText =
+            "Please login first to browse available jobs.";
+        message.style.display = "block";
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/api/jobs/?${params.toString()}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            }
+        );
+
+        if (response.status === 401) {
+            message.innerText =
+                "Your session has expired. Please login again.";
+            message.style.display = "block";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error("Failed to load jobs.");
+        }
+
+        const data = await response.json();
+
+        const jobs = data.results || [];
+
+        document.getElementById("resultCount").innerText =
+            `${jobs.length} jobs found`;
+
+        if (jobs.length === 0) {
+            container.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:50px;">
+                    <h3>No jobs found</h3>
+                    <p>Try changing your search filters.</p>
+                </div>
+            `;
+        } else {
+
+            jobs.forEach(job => {
+
+                const salary =
+                    job.salary_min || job.salary_max
+                        ? `৳${job.salary_min || 0} - ৳${job.salary_max || "Negotiable"}`
+                        : "Salary not specified";
+
+                const description =
+                    job.description
+                        ? job.description.substring(0, 130)
+                        : "No description available.";
+
+                container.innerHTML += `
+                    <article class="job-card">
+
+                        <div class="job-company">
+                            ${escapeHtml(job.company_name || "Company")}
+                        </div>
+
+                        <h3 class="job-title">
+                            ${escapeHtml(job.title)}
+                        </h3>
+
+                        <div class="job-meta">
+
+                            <span class="job-tag">
+                                ${escapeHtml(job.location || "Remote")}
+                            </span>
+
+                            <span class="job-tag">
+                                ${formatChoice(job.job_type)}
+                            </span>
+
+                            <span class="job-tag">
+                                ${formatChoice(job.experience_level)}
+                            </span>
+
+                        </div>
+
+                        <p class="job-description">
+                            ${escapeHtml(description)}
+                        </p>
+
+                        <div class="job-footer">
+
+                            <span class="salary">
+                                ${salary}
+                            </span>
+
+                            <a
+                                href="/jobs/${job.id}/"
+                                class="view-job"
+                            >
+                                View Job
+                            </a>
+
+                        </div>
+
+                    </article>
+                `;
+            });
+        }
+
+        renderPagination(data);
+
+    } catch (error) {
+
+        message.innerText =
+            "Unable to load jobs. Please try again.";
+
+        message.style.display = "block";
+
+        console.error(error);
+    }
+}
+
+
+function renderPagination(data) {
+
+    const pagination = document.getElementById("pagination");
+
+    pagination.innerHTML = "";
+
+    if (data.previous) {
+
+        const previousButton = document.createElement("button");
+
+        previousButton.innerText = "Previous";
+
+        previousButton.onclick = () => {
+            currentPage--;
+            loadJobs(currentPage);
+        };
+
+        pagination.appendChild(previousButton);
+    }
+
+    if (data.next) {
+
+        const nextButton = document.createElement("button");
+
+        nextButton.innerText = "Next";
+
+        nextButton.onclick = () => {
+            currentPage++;
+            loadJobs(currentPage);
+        };
+
+        pagination.appendChild(nextButton);
+    }
+}
+
+
+function formatChoice(value) {
+
+    if (!value) {
+        return "N/A";
+    }
+
+    return value
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
+
+function escapeHtml(value) {
+
+    const div = document.createElement("div");
+
+    div.textContent = value || "";
+
+    return div.innerHTML;
+}
+
+
+document
+    .getElementById("searchButton")
+    .addEventListener("click", function () {
+        currentPage = 1;
+        loadJobs(1);
+    });
+
+
+document
+    .getElementById("search")
+    .addEventListener("keydown", function(event) {
+
+        if (event.key === "Enter") {
+            currentPage = 1;
+            loadJobs(1);
+        }
+
+    });
+
+
+loadJobs();
+
+</script>
+
+{% endblock %}
