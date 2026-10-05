@@ -151,6 +151,28 @@ SPECTACULAR_SETTINGS = {
             "BearerAuth": [],
         },
     ],
+    "ENUM_NAME_OVERRIDES": {
+        "JobStatusEnum": [
+            ("draft", "Draft"),
+            ("published", "Published"),
+            ("closed", "Closed"),
+        ],
+        "ApplicationStatusEnum": [
+            ("applied", "Applied"),
+            ("reviewing", "Reviewing"),
+            ("shortlisted", "Shortlisted"),
+            ("interview", "Interview"),
+            ("selected", "Selected"),
+            ("rejected", "Rejected"),
+            ("withdrawn", "Withdrawn"),
+        ],
+        "InterviewStatusEnum": [
+            ("scheduled", "Scheduled"),
+            ("completed", "Completed"),
+            ("cancelled", "Cancelled"),
+            ("rescheduled", "Rescheduled"),
+        ],
+    },
 }
 
 if not DEBUG:

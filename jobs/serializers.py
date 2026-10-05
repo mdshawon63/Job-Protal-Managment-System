@@ -4,7 +4,6 @@ from .models import Job, JobBookmark
 
 
 class JobSerializer(serializers.ModelSerializer):
-
     company_name = serializers.CharField(
         source="company.name",
         read_only=True
@@ -33,7 +32,6 @@ class JobSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-
         read_only_fields = [
             "id",
             "posted_by",
@@ -43,10 +41,19 @@ class JobSerializer(serializers.ModelSerializer):
         ]
 
     def validate_company(self, company):
+        request = self.context.get("request")
 
-        user = self.context["request"].user
+        if request is None:
+            return company
 
-        if user.role == "admin":
+        user = getattr(request, "user", None)
+
+        if not user or not user.is_authenticated:
+            raise serializers.ValidationError(
+                "Authentication is required."
+            )
+
+        if getattr(user, "role", None) == "admin":
             return company
 
         if company.owner != user:
@@ -58,7 +65,6 @@ class JobSerializer(serializers.ModelSerializer):
 
 
 class JobBookmarkSerializer(serializers.ModelSerializer):
-
     job_title = serializers.CharField(
         source="job.title",
         read_only=True
@@ -71,7 +77,6 @@ class JobBookmarkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JobBookmark
-
         fields = [
             "id",
             "job",
@@ -79,7 +84,6 @@ class JobBookmarkSerializer(serializers.ModelSerializer):
             "company_name",
             "created_at",
         ]
-
         read_only_fields = [
             "id",
             "created_at",
